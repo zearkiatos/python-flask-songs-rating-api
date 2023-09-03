@@ -15,11 +15,8 @@ class PointView(Resource):
         }
         response = requests.post(f'{config.SONGS_API_BASE_URL}/login',json=data)
         if response.status_code == HTTPStatus.OK:
-            print(response.content)
             data = response.json()
             accessToken = data['accessToken']
-
-            print(accessToken)
 
             headers = {
                 'Authorization': f'Bearer {accessToken}'
@@ -30,7 +27,6 @@ class PointView(Resource):
                 return content.json(), HTTPStatus.NOT_FOUND
             else:
                 song = content.json()
-                print(song)
                 song['point'] = request.json['point']
                 args = (song,)
                 return json.dumps(song)
