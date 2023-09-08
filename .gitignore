@@ -1,0 +1,4 @@
+venv
+.env
+python-flask-songs-api
+__pycache__

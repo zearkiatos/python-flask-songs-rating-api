@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: python-flask-songs-rating-api
+    volumes:
+      - ".:/app"
+    ports:
+      - "5006:5005"
+    env_file:
+      - .env.dev
+    tty: true
+    depends_on:
+      - songs-api
+    links:
+      - songs-api
+  songs-api:
+    build:
+      context: .
+      dockerfile: python-flask-songs-api/Dockerfile
+    container_name: songs-api
+    volumes:
+      - ".:/app"
+    ports:
+      - "5001:5000"
+    env_file:
+      - python-flask-songs-api/.env.dev
+    tty: true
+    depends_on:
+      - broker
+    links:
+      - broker
+  broker:
+    build:
+      context: .
+      dockerfile: python-flask-songs-api/redis.Dockerfile
+    container_name: songs-broker
+    ports:
+      - "6380:6379"
+    volumes:
+      - ./data/redis/:/data
