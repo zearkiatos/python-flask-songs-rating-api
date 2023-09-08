@@ -4,8 +4,15 @@ import requests
 from http import HTTPStatus
 from ..config import Config
 import json
+from celery import Celery
 
 config = Config()
+
+celery_app = Celery('tasks', broker=f'{config.REDIS_BROKER_BASE_URL}/0')
+
+@celery_app.task(name='table.registry')
+def point_registry(song_json):
+    pass
 
 class PointView(Resource):
     def post(self, song_id):
@@ -29,6 +36,7 @@ class PointView(Resource):
                 song = content.json()
                 song['point'] = request.json['point']
                 args = (song,)
+                point_registry.apply_async(args)
                 return json.dumps(song)
         else:
             return {
